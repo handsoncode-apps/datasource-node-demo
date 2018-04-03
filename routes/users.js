@@ -231,7 +231,7 @@ router.post("/create/column", jsonParser, function (req, res, next) {
  * @param {{sort:[{key:string,values[any]}], filter:[key:string,value:string]}} req.query
  */
 router.post("/data", jsonParser, function (req, res, next) {
-  let QueryBuilder = require("queryBuilder")
+  let QueryBuilder = require("datasource-node")
   let queryBuilder = new QueryBuilder(req.body)
   let dbQuery = queryBuilder.buildQuery("SELECT data.* FROM `data` JOIN rowOrder ON data.id = rowOrder.id")
 
