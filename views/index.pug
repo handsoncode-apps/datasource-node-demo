@@ -16,9 +16,11 @@ block content
     var hot = new Handsontable(container, {
         dataSourceConnector: {
           controllerUrl: '/users',
-          onDataSend : function(data){
+          requestHeaders: { 'Content-Type': 'application/json' },
+          onDataSend : function(params){
             var element = document.getElementById("log");
-            var newRow = document.createElement("tr")
+            var newRow = document.createElement("tr");
+            var data = params[0];
             newRow.innerHTML="<td>" + data.request.method + "</td><td>" + data.request.url + "</td><td>" + data.request.body + "</td><td>" + JSON.stringify(data.response) + "</td>";
             element.insertBefore(newRow, element.firstChild);
           }
