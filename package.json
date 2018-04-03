@@ -21,7 +21,8 @@
     "request": "^2.85.0",
     "sqlite3": "^3.1.13",
     "z-schema": "^3.19.1",
-    "datasource-connector": "handsoncode-apps/datasource-connector"
+    "datasource-connector": "handsoncode-apps/datasource-connector",
+    "datasource-node": "handsoncode-apps/datasource-node"
   },
   "devDependencies": {
     "chai": "^4.1.2"
