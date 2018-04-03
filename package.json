@@ -1,11 +1,12 @@
 {
-  "name": "hotpoc",
-  "version": "0.0.0",
+  "name": "datasource-node-demo",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "lint": "eslint --ext /public .",
-    "test": "mocha"
+    "test": "mocha",
+    "postinstall": "cp ./node_modules/datasource-connector/dist/datasource-connector.full.js ./public/js/"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -19,7 +20,8 @@
     "pug": "^2.0.0",
     "request": "^2.85.0",
     "sqlite3": "^3.1.13",
-    "z-schema": "^3.19.1"
+    "z-schema": "^3.19.1",
+    "datasource-connector": "handsoncode-apps/datasource-connector"
   },
   "devDependencies": {
     "chai": "^4.1.2"

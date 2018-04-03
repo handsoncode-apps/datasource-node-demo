@@ -1,17 +1,25 @@
-# Node example #
+# datasource-connector demo #
 
+Node.js data source for your Handsontable demo. Works great with datasource-connector plugin.
+This example is written in Express using the SQLite as backend data storage for demo propose.  
 
-This is example of usage Hot instane with backend written in Express - Node.js. SQLite has been used to set backend database.
+## Run this demo:
 
- Use following commands to install Node.js, Express then start project:
-
-```javascript
+### Install dependencies
+```bash
 npm install
-
-npm install express -- save
-
+```
+### run express js server 
+```bash
 node start
 ```
+### open the demo page
+In the web browser open the url:
+```
+http://localhost:3000/users
+```
+
+Enjoy!
 
 
 
