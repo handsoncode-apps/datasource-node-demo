@@ -17,10 +17,9 @@ block content
         dataSourceConnector: {
           controllerUrl: '/users',
           requestHeaders: { 'Content-Type': 'application/json' },
-          onDataSend : function(params){
+          onDataSend : function(data){
             var element = document.getElementById("log");
             var newRow = document.createElement("tr");
-            var data = params[0];
             newRow.innerHTML="<td>" + data.request.method + "</td><td>" + data.request.url + "</td><td>" + data.request.body + "</td><td>" + JSON.stringify(data.response) + "</td>";
             element.insertBefore(newRow, element.firstChild);
           }
