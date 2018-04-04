@@ -2,7 +2,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const sqlite3 = require("sqlite3").verbose();
-
+const dataSource = require("datasource-node")
 const router = express.Router();
 
 // create application/json parser
@@ -109,7 +109,7 @@ let db = new sqlite3.Database("./database.db", function (data) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{changes:[{row:number,column:number,newValue:string,meta:{row:number,col:number,visualRow:number,visualCol:number,prop:number,row_id:number,col_id:any}}], source:String}} req.body
+ * @param {{dataSource.UpdatedData}} req.body
  */
 router.post("/update", jsonParser, function (req, res, next) {
 
@@ -141,7 +141,7 @@ router.post("/update", jsonParser, function (req, res, next) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{createRow:{index:number,amount:number,source:string}}} req.body
+ * @param {{dataSource.CreatedRow}} req.body
  */
 router.post("/create/row", jsonParser, function (req, res, next) {
   db.serialize(function () {
@@ -174,7 +174,7 @@ router.post("/remove/row", jsonParser, function(req, res, next) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{rowMove:{rowsMoved:array,target:number}}} req.body
+ * @param {{dataSource.RowMoved}} req.body
  */
 router.post("/move/row", jsonParser, function(req, res, next) {
   let rowMove = req.body;
@@ -208,7 +208,7 @@ let num_of_dynamic_columns = 0;
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{createCol:{index:number,amount:number,source:string}}} req.body
+ * @param {{dataSource.CreatedColumn}} req.body
  */
 router.post("/create/column", jsonParser, function (req, res, next) {
   let createCol = req.body;
@@ -228,11 +228,10 @@ router.post("/create/column", jsonParser, function (req, res, next) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{sort:[{key:string,values[any]}], filter:[key:string,value:string]}} req.query
+ * @param {{dataSource.SearchParams}} req.query
  */
 router.post("/data", jsonParser, function (req, res, next) {
-  let QueryBuilder = require("datasource-node")
-  let queryBuilder = new QueryBuilder(req.body)
+  let queryBuilder = new dataSource.QueryBuilder(req.body)
   let dbQuery = queryBuilder.buildQuery("SELECT data.* FROM `data` JOIN rowOrder ON data.id = rowOrder.id")
 
   db.all(dbQuery, (err, rows) => {
@@ -242,7 +241,7 @@ router.post("/data", jsonParser, function (req, res, next) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{tmp:{columns:array,target:number}}} req.body
+ * @param {{dataSource.ColumnMoved}} req.body
  */
 router.post("/move/column", jsonParser, function (req, res, next) {
   let colMoved = req.body;
