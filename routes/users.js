@@ -11,7 +11,6 @@ const jsonParser = bodyParser.json();
 let settings = {
   rowHeaders: true,
   colHeaders: true,
-  datasourceConnectorPlugin: true,
   columnSorting: true,
   contextMenu: true,
   manualColumnMove: true,
@@ -112,7 +111,6 @@ let db = new sqlite3.Database("./database.db", function (data) {
  * @param {{dataSource.UpdatedData}} req.body
  */
 router.post("/update", jsonParser, function (req, res, next) {
-
   let changes = req.body.changes
 
   for (let i = 0; i < changes.length; i++) {

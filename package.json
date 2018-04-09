@@ -2,6 +2,7 @@
   "name": "datasource-node-demo",
   "version": "1.0.0",
   "private": true,
+  "author": "Handsoncode <hello@handsontable.com>",
   "scripts": {
     "start": "node ./bin/www",
     "lint": "eslint --ext /public .",

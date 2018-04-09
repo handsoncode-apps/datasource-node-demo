@@ -5,7 +5,7 @@ var bodyParser = require('body-parser')
 var users = require('./routes/users')
 
 var app = express()
-var port = 3000
+var port = 3001
 
 app.use(logger('dev'))
 app.use(bodyParser.json())

@@ -1,7 +1,7 @@
 # datasource-connector demo #
 
-Node.js data source for your Handsontable demo. Works great with datasource-connector plugin.
-This example is written in Express using the SQLite as backend data storage for demo propose.  
+Node.js data source for your Handsontable demo. Works great with [datasource-connector](https://github.com/handsoncode-apps/datasource-connector) plugin.
+This example shows how to communicate Handsontable table using datasource-connector to backend. Example's business logic is using the SQL (SQLite in example).
 
 ## Run this demo:
 
@@ -11,12 +11,12 @@ npm install
 ```
 ### run express js server 
 ```bash
-node start
+npm start
 ```
 ### open the demo page
 In the web browser open the url:
 ```
-http://localhost:3000/users
+http://localhost:3001/users
 ```
 
 Enjoy!
