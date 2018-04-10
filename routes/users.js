@@ -141,7 +141,7 @@ router.post("/update", jsonParser, function (req, res, next) {
  * @param {{e.RequestHandler}} jsonParser
  * @param {{dataSource.CreatedRow}} req.body
  */
-router.post("/create/row", jsonParser, function (req, res, next) {
+router.post("/row/create", jsonParser, function (req, res, next) {
   db.serialize(function () {
     let stmt = db.prepare("INSERT INTO `data` (`first_name`, `last_name`,`age`,`sex`,`phone`) VALUES ('', '', '', '', '')")
     stmt.run(function(error){
@@ -159,7 +159,7 @@ router.post("/create/row", jsonParser, function (req, res, next) {
   })
 });
 
-router.post("/remove/row", jsonParser, function(req, res, next) {
+router.post("/row/remove", jsonParser, function(req, res, next) {
   let removedRows = req.body
   for (let i = 0; i < removedRows.length; i++) {
     db.run("DELETE FROM `data` WHERE id = '" + removedRows[i] + "'", function(err, row) {
@@ -174,7 +174,7 @@ router.post("/remove/row", jsonParser, function(req, res, next) {
  * @param {{e.RequestHandler}} jsonParser
  * @param {{dataSource.RowMoved}} req.body
  */
-router.post("/move/row", jsonParser, function(req, res, next) {
+router.post("/row/move", jsonParser, function(req, res, next) {
   let rowMove = req.body;
   let rowsMoved = rowMove.rowsMoved;
   let target = rowMove.target;
@@ -208,7 +208,7 @@ let num_of_dynamic_columns = 0;
  * @param {{e.RequestHandler}} jsonParser
  * @param {{dataSource.CreatedColumn}} req.body
  */
-router.post("/create/column", jsonParser, function (req, res, next) {
+router.post("/column/create", jsonParser, function (req, res, next) {
   let createCol = req.body;
   num_of_dynamic_columns++;
   colOrder.splice(createCol.index, 0, 'dynamic_' + num_of_dynamic_columns);
@@ -223,6 +223,48 @@ router.post("/create/column", jsonParser, function (req, res, next) {
 
   })
 });
+
+
+/**
+ * @param {{e.RequestHandler}} jsonParser
+ * @param {{dataSource.SearchParams}} req.query
+ */
+router.post("/cell/merge", jsonParser, function (req, res, next) {
+  res.json({data:'ok'});
+});
+
+/**
+ * @param {{e.RequestHandler}} jsonParser
+ * @param {{dataSource.SearchParams}} req.query
+ */
+router.post("/cell/unmerge", jsonParser, function (req, res, next) {
+  res.json({data:'ok'});
+});
+
+/**
+ * @param {{e.RequestHandler}} jsonParser
+ * @param {{dataSource.SearchParams}} req.query
+ */
+router.post("/cell/merge", jsonParser, function (req, res, next) {
+  res.json({data:'ok'});
+});
+
+/**
+ * @param {{e.RequestHandler}} jsonParser
+ * @param {{dataSource.SearchParams}} req.query
+ */
+router.post("/cell/unmerge", jsonParser, function (req, res, next) {
+  res.json({data:'ok'});
+});
+
+/**
+ * @param {{e.RequestHandler}} jsonParser
+ * @param {{dataSource.SearchParams}} req.query
+ */
+router.post("/cell/meta", jsonParser, function (req, res, next) {
+  res.json({data:'ok'});
+});
+
 
 /**
  * @param {{e.RequestHandler}} jsonParser
@@ -241,7 +283,7 @@ router.post("/data", jsonParser, function (req, res, next) {
  * @param {{e.RequestHandler}} jsonParser
  * @param {{dataSource.ColumnMoved}} req.body
  */
-router.post("/move/column", jsonParser, function (req, res, next) {
+router.post("/column/move", jsonParser, function (req, res, next) {
   let colMoved = req.body;
 
   let columns = colMoved.columnNames;
@@ -267,7 +309,7 @@ router.get("/", function(req, res){
   res.render('index')
 });
 
-router.post("/remove/column", jsonParser, function (req, res, next) {
+router.post("/column/remove", jsonParser, function (req, res, next) {
   let colRemoved = req.body
   for (let i = 0; i < colRemoved.length; i++) {
     colOrder = colOrder.filter(function(item) { return item !== colRemoved[i] })
