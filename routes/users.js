@@ -18,6 +18,7 @@ let settings = {
   sortIndicator: true,
   filters: true,
   dropdownMenu: true,
+  manualRowResize: true
 };
 
 let colOrder = []
@@ -40,6 +41,9 @@ let db = new sqlite3.Database("./database.db", function (data) {
         "CREATE TABLE IF NOT EXISTS `rowOrder` (id INTEGER, sort_order INTEGER)"
       );
       db.run(
+        "CREATE TABLE IF NOT EXISTS `sizes` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, colId TEXT, rowId INTEGER, size INTEGER)"
+      );
+      db.run(
         "CREATE UNIQUE INDEX IF NOT EXISTS SETTINGS_INDEX ON settings (id)"
       );
       db.run(
@@ -50,6 +54,9 @@ let db = new sqlite3.Database("./database.db", function (data) {
       );
       db.run(
         "CREATE UNIQUE INDEX IF NOT EXISTS ROW_INDEX on rowOrder (id)"
+      )
+      db.run(
+        "CREATE UNIQUE INDEX IF NOT EXISTS COLUMN_SIZE_INDEX on sizes (colId)"
       )
     });
   }
@@ -199,6 +206,22 @@ router.post("/row/move", jsonParser, function(req, res, next) {
       stmt.finalize();
     })
     res.json({data:'ok'});
+  })
+})
+
+/**
+ * @param {{e.RequestHandler}} jsonParser
+ * @param {{dataSource.RowResized}} req.body
+ */
+router.post("/row/resize", jsonParser, function (req, res, next) {
+  let resize = req.body;
+  db.serialize(function() {
+    let stmt = db.prepare("INSERT OR REPLACE INTO `sizes` (rowId, size ) VALUES ('" + resize.row + "', '" + resize.size + "')")
+    stmt.run(function(err) {
+      if (!err) {
+        res.json({data:'ok'});
+      }
+    })
   })
 })
 
