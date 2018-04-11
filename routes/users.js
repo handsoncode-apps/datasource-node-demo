@@ -18,6 +18,7 @@ let settings = {
   sortIndicator: true,
   filters: true,
   dropdownMenu: true,
+  mergeCells: true
 };
 
 let colOrder = []
@@ -51,6 +52,9 @@ let db = new sqlite3.Database("./database.db", function (data) {
       db.run(
         "CREATE UNIQUE INDEX IF NOT EXISTS ROW_INDEX on rowOrder (id)"
       )
+      db.run(
+        "CREATE TABLE IF NOT EXISTS `mergedCells` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, column_from TEXT, column_to TEXT, row_from INTEGER, row_to INTEGER)"
+      );
     });
   }
   // initailize settings
@@ -227,10 +231,20 @@ router.put("/column", jsonParser, function (req, res, next) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{dataSource.SearchParams}} req.query
+ * @param {{dataSource.mergedCells}} req.query
  */
+
 router.post("/cell/merge", jsonParser, function (req, res, next) {
-  res.json({data:'ok'});
+  let merged = req.body;
+  db.serialize(function() {
+    let stmt = db.prepare("INSERT INTO `mergedCells` (`column_from`, `column_to`, `row_from`, `row_to`) VALUES ('" + merged.fromColumn +"', '" + merged.toColumn + "', '" + merged.fromRow + "', '" + merged.toRow + "')")
+    stmt.run(function(err) {
+      stmt.finalize()
+      if (!err) {
+        res.json({data:'ok'});
+      }
+    })
+  })
 });
 
 /**
