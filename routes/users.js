@@ -258,16 +258,18 @@ router.put("/column", jsonParser, function (req, res, next) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{dataSource.mergedCells}} req.query
+ * @param {{dataSource.MergedCells}} req.body
  */
 
 router.post("/cell/merge", jsonParser, function (req, res, next) {
-  let merged = req.body;
-  db.serialize(function() {
-    let stmt = db.prepare("INSERT INTO `mergedCells` (`column_from`, `column_to`, `row_from`, `row_to`) VALUES ('" + merged.fromColumn +"', '" + merged.toColumn + "', '" + merged.fromRow + "', '" + merged.toRow + "')")
-    stmt.run(function(err) {
-      stmt.finalize()
-      if (!err) {
+  let mergedData = req.body;
+  let mergedParent = mergedData.mergedParent;
+  let mergedCells = mergedData.mergedCells;
+  let stmt = db.prepare("INSERT INTO `mergedCells` (parent_row_id, parent_col_id, cell_row_id, cell_col_id) VALUES (?, ?, ?, ?)")
+  for (let i = 0; i < mergedCells.length; i++) {
+    stmt.run(mergedParent.row, mergedParent.column, mergedCells[i].row, mergedCells[i].column)
+  }
+  stmt.finalize();
         res.json({data:'ok'});
       }
     })
