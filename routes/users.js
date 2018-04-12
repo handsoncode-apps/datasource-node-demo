@@ -18,6 +18,7 @@ let settings = {
   sortIndicator: true,
   filters: true,
   dropdownMenu: true,
+  mergeCells: true
 };
 
 let colOrder = []
@@ -38,6 +39,9 @@ let db = new sqlite3.Database("./database.db", function (data) {
       );
       db.run(
         "CREATE TABLE IF NOT EXISTS `rowOrder` (id INTEGER, sort_order INTEGER)"
+      );
+      db.run(
+        "CREATE TABLE IF NOT EXISTS `mergedCells` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, parent_row_id INTEGER, parent_col_id TEXT, cell_row_id INTEGER, cell_col_id TEXT)"
       );
       db.run(
         "CREATE UNIQUE INDEX IF NOT EXISTS SETTINGS_INDEX ON settings (id)"
@@ -227,9 +231,17 @@ router.put("/column", jsonParser, function (req, res, next) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{dataSource.SearchParams}} req.query
+ * @param {{dataSource.MergedCells}} req.body
  */
 router.post("/cell/merge", jsonParser, function (req, res, next) {
+  let mergedData = req.body;
+  let mergedParent = mergedData.mergedParent;
+  let mergedCells = mergedData.mergedCells;
+  let stmt = db.prepare("INSERT INTO `mergedCells` (parent_row_id, parent_col_id, cell_row_id, cell_col_id) VALUES (?, ?, ?, ?)")
+  for (let i = 0; i < mergedCells.length; i++) {
+    stmt.run(mergedParent.row, mergedParent.column, mergedCells[i].row, mergedCells[i].column)
+  }
+  stmt.finalize();
   res.json({data:'ok'});
 });
 
