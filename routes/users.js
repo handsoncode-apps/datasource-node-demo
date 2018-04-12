@@ -19,6 +19,7 @@ let settings = {
   filters: true,
   dropdownMenu: true,
   mergeCells: true
+  manualRowResize: true
   manualColumnResize: true
 };
 
@@ -59,6 +60,9 @@ let db = new sqlite3.Database("./database.db", function (data) {
       db.run(
         "CREATE TABLE IF NOT EXISTS `mergedCells` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, column_from TEXT, column_to TEXT, row_from INTEGER, row_to INTEGER)"
       );
+      db.run(
+        "CREATE UNIQUE INDEX IF NOT EXISTS COLUMN_SIZE_INDEX on sizes (colId)"
+      )
       db.run(
         "CREATE UNIQUE INDEX IF NOT EXISTS ROW_SIZE_INDEX on sizes (rowId)"
       )
@@ -210,6 +214,22 @@ router.post("/row/move", jsonParser, function(req, res, next) {
       stmt.finalize();
     })
     res.json({data:'ok'});
+  })
+})
+
+/**
+ * @param {{e.RequestHandler}} jsonParser
+ * @param {{dataSource.RowResized}} req.body
+ */
+router.post("/row/resize", jsonParser, function (req, res, next) {
+  let resize = req.body;
+  db.serialize(function() {
+    let stmt = db.prepare("INSERT OR REPLACE INTO `sizes` (rowId, size ) VALUES ('" + resize.row + "', '" + resize.size + "')")
+    stmt.run(function(err) {
+      if (!err) {
+        res.json({data:'ok'});
+      }
+    })
   })
 })
 
