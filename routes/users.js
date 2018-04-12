@@ -18,8 +18,8 @@ let settings = {
   sortIndicator: true,
   filters: true,
   dropdownMenu: true,
-  mergeCells: true
-  manualRowResize: true
+  mergeCells: true,
+  manualRowResize: true,
   manualColumnResize: true
 };
 
@@ -273,10 +273,7 @@ router.post("/cell/merge", jsonParser, function (req, res, next) {
     stmt.run(mergedParent.row, mergedParent.column, mergedCells[i].row, mergedCells[i].column)
   }
   stmt.finalize();
-        res.json({data:'ok'});
-      }
-    })
-  })
+  res.json({data:'ok'});
 });
 
 /**
