@@ -294,7 +294,7 @@ router.post("/cell/unmerge", jsonParser, function (req, res, next) {
 
 /**
  * @param {{e.RequestHandler}} jsonParser
- * @param {{dataSource.SearchParams}} req.query
+ * @param {{dataSource.ResizedColumn}} req.query
  */
 router.post("/column/resize", jsonParser, function (req, res, next) {
   let resize = req.body;
