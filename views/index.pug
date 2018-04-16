@@ -1,35 +1,116 @@
 extends layout
 
 block content
-  h1 Example
-  div(id="hot")
-  table(id="log")
-    thead
-      tr
-        th Method
-        th URL
-        th Payload
-        th Data
+  div(id="header")
+    img(src="https://raw.githubusercontent.com/handsontable/static-files/master/Images/Logo/Handsontable/Handsontable-logo-300-74-new.png")
+  div(id="container")
+    div(id="col-left" class="split split-horizontal content")
+      div(id="docs-container")
+        span jeje
+    div(id="col-right" class="split split-horizontal")
+      div(id="hot-container" class="split content")
+        div(id="hot")
+      div(id="log-container" class="split content")
+        div(id="log" class="split")
   script.
     var container = document.getElementById('hot');
     
     var hot = new Handsontable(container, {
-        dataSourceConnector: {
-          controllerUrl: '/users',
-          requestHeaders: { 'Content-Type': 'application/json' },
-          onDataSend : function(data){
-            var element = document.getElementById("log");
-            var newRow = document.createElement("tr");
-            newRow.innerHTML="<td>" + data.request.method + "</td><td>" + data.request.url + "</td><td>" + data.request.body + "</td><td>" + JSON.stringify(data.response) + "</td>";
-            element.insertBefore(newRow, element.firstChild);
+      dataSourceConnector: {
+        controllerUrl: '/users',
+        requestHeaders: { 'Content-Type': 'application/json' },
+        onDataSend : function(data){
+          if (data.request.body) {
+          var element = document.getElementById("log");
+          var newPre = document.createElement("code");
+          newPre.innerHTML = JSON.stringify(data.request.body, undefined, 2)
+          element.insertBefore(newPre, element.firstChild);
           }
-        },
+        }
+      },
     });
 block scripts
+  script(src='/js/split.js')
   script(src='https://docs.handsontable.com/pro/1.18.0/bower_components/handsontable-pro/dist/handsontable.full.js')
   script(src='/js/datasource-connector.full.js')
-  
+  script.
+    window.onload = function() {
+      Split(['#col-left', '#col-right'], {
+        gutterSize: 16,
+        cursor: 'col-resize'
+      });
+
+      Split(['#hot-container', '#log-container'], {
+        direction: 'vertical',
+        sizes: [25, 75],
+        gutterSize: 16,
+        cursor: 'row-resize'
+      });
+    }
+
 block css
+  link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css")
   link(rel='stylesheet', href='https://docs.handsontable.com/pro/1.18.0/bower_components/handsontable-pro/dist/handsontable.min.css')
+  style.
+    html, body {
+      height: 100%;
+    }
+    body {
+      //- padding: 8px;
+      background-color: #F6F6F6;
+      box-sizing: border-box;
+    }
+    #container {
+      padding: 16px;      
+      height: calc(100vh - 92px);
+      box-sizing: border-box;
+    }
+    .split {
+      -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+              box-sizing: border-box;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .content {
+      border: 1px solid #C0C0C0;
+      box-shadow: inset 0 1px 2px #e4e4e4;
+      background-color: #fff;
+    }
+    .gutter {
+      background-color: transparent;
+      background-repeat: no-repeat;
+      background-position: 50%;
+    }
+    .gutter.gutter-horizontal {
+      cursor: col-resize;
+      background-image: url('../img/vertical.png');
+    }
+    .gutter.gutter-vertical {
+      cursor: row-resize;
+      background-image: url('../img/horizontal.png');
+    }
+    .split.split-horizontal, .gutter.gutter-horizontal {
+      height: 100%;
+      float: left;
+      display: inline-block;
+    }
+    #header {
+      padding: 23px 16px;
+      background-color: #0040C2;
+    }
+    #header img {
+      height: 42px;
+      width: auto;
+    }
+    #log {
+      display: block;
+    }
+    #log .pre {
+      white-space: normal;
+    }
+    #docs-container, #hot-container, #log-container {
+      padding: 16px;
+    }
 
 
