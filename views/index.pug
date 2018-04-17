@@ -6,7 +6,7 @@ block content
   div(id="container")
     div(id="col-left" class="split split-horizontal content")
       div(id="docs-container")
-        span jeje
+        iframe
     div(id="col-right" class="split split-horizontal")
       div(id="hot-container" class="split content")
         div(id="hot")
@@ -21,18 +21,45 @@ block content
         requestHeaders: { 'Content-Type': 'application/json' },
         onDataSend : function(data){
           if (data.request.body) {
-          var element = document.getElementById("log");
-          var newPre = document.createElement("code");
-          newPre.innerHTML = JSON.stringify(data.request.body, undefined, 2)
-          element.insertBefore(newPre, element.firstChild);
+            var element = document.getElementById("log");
+            var newReq = document.createElement("div");
+            newReq.className = "request request--" + data.request.method.toLowerCase()
+            newReq.innerHTML = '<div class="method">' + data.request.method + '</div><div class="url">' + data.request.url + '</div><div class="data"><div class="req-body payload"><i class="toggle-data fal fa-minus-square"></i><p>Request</p><pre class="json">' + JSON.stringify(JSON.parse(data.request.body), undefined, 2) + '</pre></div><div class="res-body"><i class="toggle-data fal fa-minus-square"></i><p>Response</p><pre class="json">' + JSON.stringify(data.response, undefined, 2) + '</pre></div></div>'
+            element.insertBefore(newReq, element.firstChild);
+
+            toggleData = document.querySelectorAll('.toggle-data')
+            for (var i = 0; i < toggleData.length; i++) {
+              var elem = toggleData[i]
+              elem.addEventListener("click", function(e) {
+                e.preventDefault();
+                var json = this.nextSibling.nextSibling
+                if (json.style.display !== "none") {
+                  for (j = 0; j < elem.classList.length; j++) {
+                    if (this.classList[j] === "fa-minus-square") {
+                      this.className = "fal fa-plus-square";
+                    }
+                  }
+                  json.style.display = "none";
+                } else {
+                  for (j = 0; j < this.classList.length; j++) {
+                    if (this.classList[j] === "fa-plus-square") {
+                      this.className = "fal fa-minus-square"
+                    }
+                  }
+                  json.style.display = "block";
+                }
+              })
+            }
           }
         }
       },
     });
+
 block scripts
   script(src='/js/split.js')
   script(src='https://docs.handsontable.com/pro/1.18.0/bower_components/handsontable-pro/dist/handsontable.full.js')
   script(src='/js/datasource-connector.full.js')
+  script(src='/js/jsonTreeViewer.js')
   script.
     window.onload = function() {
       Split(['#col-left', '#col-right'], {
@@ -51,12 +78,15 @@ block scripts
 block css
   link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css")
   link(rel='stylesheet', href='https://docs.handsontable.com/pro/1.18.0/bower_components/handsontable-pro/dist/handsontable.min.css')
+  link(href="/css/fontawesome-all.css", rel="stylesheet")
+  link(href="/css/fjsonTreeViewer.css", rel="stylesheet")
+  link(href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700" rel="stylesheet")
   style.
     html, body {
       height: 100%;
     }
     body {
-      //- padding: 8px;
+      padding: 8px;
       background-color: #F6F6F6;
       box-sizing: border-box;
     }
@@ -103,11 +133,87 @@ block css
       height: 42px;
       width: auto;
     }
+    #docs-container {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+    }
+    #docs-container iframe {
+      width: 100%;
+      height: 100%;
+    }
+    #log-container i {
+      font-family: "Font Awesome 5 Free" !important;
+    }
     #log {
       display: block;
     }
-    #log .pre {
-      white-space: normal;
+    #log .request {
+      margin-bottom: 10px;
+    }
+    #log .method, #log .url {
+      display: inline-block;
+    }
+    #log .request .method {
+      font-family: "Helvetica Neue";
+      font-size: 12px;
+    }
+    #log .request--post .method {
+      color: #41CD8E;
+    }
+    #log .request--get .method {
+      color: #5DADFF;
+    }
+    #log .request--put .method {
+      color: #FEA217;
+    }
+    #log .request--delete .method {
+      color: #FC3B37;
+    }
+    #log .request .url {
+      margin-left: 10px;
+      color: #444F6C;
+      font-size: 12px;
+    }
+    #log .request .data {
+      border-left: 3px solid;
+    }
+    #log .request .req-body, #log .request .res-body {
+      padding-left: 10px;
+      font-family: 'Roboto Mono', monospace;
+    }
+    #log .request .req-body i, #log .request .res-body i {
+      position: relative;
+      top: 2px;
+      color: #BCBCBC;
+    }
+    #log .request .req-body .payload, #log .request .res-body .payload {
+      margin-bottom: 7px;
+    }
+    #log .request--post .data {
+      border-color: #41CD8E;
+    }
+    #log .request--get .data {
+      border-color: #5DADFF;
+    }
+    #log .request--put .data {
+      border-color: #FEA217;
+    }
+    #log .request--delete .data {
+      border-color: #FC3B37;
+    }
+    #log .request .req-body p, #log .request .res-body p {
+      display: inline-block;
+      margin: 3px 0 3px 6px;
+      color: #BCBCBC;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    #log .request .req-body .json, #log .request .res-body .json {
+      margin: 4px 0;
+      padding: 9px;
+      background-color: #F8F8F8;
     }
     #docs-container, #hot-container, #log-container {
       padding: 16px;
