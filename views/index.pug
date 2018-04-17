@@ -23,10 +23,14 @@ block content
           if (data.request.body) {
             var element = document.getElementById("log");
             var newReq = document.createElement("div");
-            newReq.className = "request request--" + data.request.method.toLowerCase()
-            newReq.innerHTML = '<div class="method">' + data.request.method + '</div><div class="url">' + data.request.url + '</div><div class="data"><div class="req-body payload"><i class="toggle-data fal fa-minus-square"></i><p>Request</p><pre class="json">' + JSON.stringify(JSON.parse(data.request.body), undefined, 2) + '</pre></div><div class="res-body"><i class="toggle-data fal fa-minus-square"></i><p>Response</p><pre class="json">' + JSON.stringify(data.response, undefined, 2) + '</pre></div></div>'
+            newReq.className = "request request--" + data.request.method.toLowerCase();
+            newReq.innerHTML = '<div class="method">' + data.request.method + '</div><div class="url">' + data.request.url + '</div><div class="data"><div class="req-body payload"><i class="toggle-data fal fa-minus-square"></i><p>Request</p><div id="req-json" class="json"></div></div><div class="res-body"><i class="toggle-data fal fa-minus-square"></i><p>Response</p><div id="res-json" class="json"></div></div></div>'
             element.insertBefore(newReq, element.firstChild);
-
+            var reqDiv = document.getElementById("req-json");
+            jsonTree.create(JSON.parse(data.request.body), reqDiv);
+            var resDiv = document.getElementById("res-json");
+            jsonTree.create(data.response, resDiv);
+            
             toggleData = document.querySelectorAll('.toggle-data')
             for (var i = 0; i < toggleData.length; i++) {
               var elem = toggleData[i]
@@ -79,7 +83,7 @@ block css
   link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css")
   link(rel='stylesheet', href='https://docs.handsontable.com/pro/1.18.0/bower_components/handsontable-pro/dist/handsontable.min.css')
   link(href="/css/fontawesome-all.css", rel="stylesheet")
-  link(href="/css/fjsonTreeViewer.css", rel="stylesheet")
+  link(href="/css/jsonTreeViewer.css", rel="stylesheet")
   link(href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700" rel="stylesheet")
   style.
     html, body {
