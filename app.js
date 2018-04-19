@@ -1,11 +1,11 @@
-var express = require('express')
-var logger = require('morgan')
-var bodyParser = require('body-parser')
+const express = require('express')
+const logger = require('morgan')
+const bodyParser = require('body-parser')
 
-var users = require('./routes/users')
+const users = require('./routes/users')
 
-var app = express()
-var port = 3001
+const app = express()
+const port = 3001
 
 app.use(logger('dev'))
 app.use(bodyParser.json())
@@ -16,7 +16,7 @@ app.use(express.static('public'))
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  var err = new Error('Not Found')
+  let err = new Error('Not Found')
   err.status = 404
   next(err)
 })
