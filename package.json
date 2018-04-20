@@ -5,7 +5,7 @@
   "author": "Handsoncode <hello@handsontable.com>",
   "scripts": {
     "start": "node ./bin/www",
-    "lint": "eslint --ext /public .",
+    "lint": "eslint --rule \"no-restricted-globals: 0\"  --ext .js ./app.js ./routes ./test",
     "test": "mocha",
     "postinstall": "cp ./node_modules/datasource-connector/dist/datasource-connector.full.js ./public/js/"
   },
@@ -26,6 +26,12 @@
     "datasource-node": "handsoncode-apps/datasource-node"
   },
   "devDependencies": {
-    "chai": "^4.1.2"
+    "chai": "^4.1.2",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1"
   }
 }
