@@ -68,6 +68,9 @@ display: block;
 #log .request {
 margin-bottom: 10px;
 }
+.jsontree_tree {
+font-size: 12px;
+}
 #log .method, #log .url {
 display: inline-block;
 font-family: 'Roboto Mono', monospace;
@@ -125,6 +128,11 @@ border-color: #FEA217;
 #log .request--delete .data {
 border-color: #FC3B37;
 }
+#log .headers {
+    font-size: 12px;
+    margin-bottom: 10px; 
+}
+
 #log .request .req-body p, #log .request .res-body p {
 display: inline-block;
 margin: 3px 0 3px 6px;

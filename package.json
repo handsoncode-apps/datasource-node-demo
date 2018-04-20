@@ -7,11 +7,11 @@
     "start": "node ./bin/www",
     "lint": "eslint --rule \"no-restricted-globals: 0\"  --ext .js ./app.js ./routes ./test",
     "test": "mocha",
-    "postinstall": "cp ./node_modules/datasource-connector/dist/datasource-connector.full.js ./public/js/"
+    "postinstall": "cp ./node_modules/datasource-connector/dist/datasource-connector.full.js ./public/js/",
+    "link": "link ../../../datasource-connector/dist/datasource-connector.js datasource-connector.js && link ../../../datasource-connector/dist/datasource-connector.js.map datasource-connector.js.map"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
-    "chai": "^4.1.2",
     "debug": "~2.6.9",
     "dotenv": "^5.0.1",
     "express": "~4.15.5",
@@ -21,12 +21,12 @@
     "pug": "^2.0.0",
     "request": "^2.85.0",
     "sqlite3": "^3.1.13",
-    "z-schema": "^3.19.1",
     "datasource-connector": "handsoncode-apps/datasource-connector",
     "datasource-node": "handsoncode-apps/datasource-node"
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "z-schema": "^3.19.1",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.11.0",
