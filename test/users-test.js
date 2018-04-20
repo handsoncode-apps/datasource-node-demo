@@ -54,7 +54,7 @@ describe('POST /users/data', function () {
   })
 })
 
-describe('POST /users/update', function () {
+describe('POST /users/cell', function () {
   it('should update data ', function (done) {
     var schema = {
       "properties": {
@@ -74,7 +74,7 @@ describe('POST /users/update', function () {
       }]
     }
     request({
-      url: baseURL + '/users/update',
+      url: baseURL + '/users/cell',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

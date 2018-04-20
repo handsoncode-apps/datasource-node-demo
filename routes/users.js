@@ -128,7 +128,7 @@ let db = new sqlite3.Database("./database.db", function (data) {
  * @param {{e.RequestHandler}} jsonParser
  * @param {{dataSource.UpdatedData}} req.body
  */
-router.post("/update", jsonParser, function (req, res, next) {
+router.post("/cell", jsonParser, function (req, res, next) {
   let changes = req.body.changes
 
   for (let i = 0; i < changes.length; i++) {
@@ -254,7 +254,6 @@ router.put("/column", jsonParser, function (req, res, next) {
         res.json({name: 'dynamic_' + num_of_dynamic_columns})
       }
     })
-
   })
 });
 
