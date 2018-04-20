@@ -7,7 +7,7 @@ body {
 }
 #container {
     padding: 16px;      
-    height: calc(100vh - 92px);
+    height: calc(100vh - 63px);
     box-sizing: border-box;
 }
 .split {
@@ -41,7 +41,7 @@ body {
     display: inline-block;
 }
 #header {
-    padding: 28px 16px 13px;
+    padding: 24px 16px 13px;
     background-color: #0040C2;
 }
 #header img {
