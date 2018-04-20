@@ -8,7 +8,7 @@
     "lint": "eslint --rule \"no-restricted-globals: 0\"  --ext .js ./app.js ./routes ./test",
     "test": "mocha",
     "postinstall": "cp ./node_modules/datasource-connector/dist/datasource-connector.full.js ./public/js/",
-    "link": "link ../../../datasource-connector/dist/datasource-connector.js datasource-connector.js && link ../../../datasource-connector/dist/datasource-connector.js.map datasource-connector.js.map"
+    "link": "link ../datasource-connector/dist/datasource-connector.js public/js/datasource-connector.js && link ../datasource-connector/dist/datasource-connector.js.map public/js/datasource-connector.js.map"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
