@@ -1,7 +1,5 @@
 /* eslint-env mocha */
 'use strict'
-var chai = require('chai')
-const should = chai.should();
 var ZSchema = require('z-schema')
 const request = require('request')
 
