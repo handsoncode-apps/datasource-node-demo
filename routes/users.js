@@ -92,6 +92,7 @@ let db = new sqlite3.Database("./database.db", function (data) {
         stmt.run("Rafal", "Ek", "34", "male", "+4354324234");
         stmt.run("Kam", "Dobrz", "20", "male", "+435223122");
         stmt.finalize();
+        initRowOrder()
       }
     });
   });
@@ -105,23 +106,26 @@ let db = new sqlite3.Database("./database.db", function (data) {
       }
     });
   });
-
   // initialize row order
-  db.serialize(function() {
-    db.all("SELECT * FROM `rowOrder` LIMIT 1", (err, rows) => {
-      if (rows.length === 0) {
-        db.all("SELECT * FROM `data`", (err, rows) => {
-          let stmt = db.prepare(
-            "INSERT INTO `rowOrder` (`id`, `sort_order`) VALUES (?, ?)"
-          )
-          for (let i = 0; i < rows.length; i++) {
-            stmt.run(rows[i].id, i + 1);
-          }
-          stmt.finalize();
-        })
-      }
+  function initRowOrder() {
+    db.serialize(function() {
+      db.all("SELECT * FROM `rowOrder` LIMIT 1", (err, rows) => {
+        if (rows.length === 0) {
+          db.all("SELECT * FROM `data`", (err, rows) => {
+            console.log("rowOrder", rows)
+            let stmt = db.prepare(
+              "INSERT INTO `rowOrder` (`id`, `sort_order`) VALUES (?, ?)"
+            )
+            for (let i = 0; i < rows.length; i++) {
+              stmt.run(rows[i].id, i + 1);
+            }
+            stmt.finalize();
+          })
+        }
+      })
     })
-  })
+  }
+
 })
 
 /**
