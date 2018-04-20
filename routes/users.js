@@ -92,6 +92,7 @@ let db = new sqlite3.Database("./database.db", function (data) {
         stmt.run("Rafal", "Ek", "34", "male", "+4354324234");
         stmt.run("Kam", "Dobrz", "20", "male", "+435223122");
         stmt.finalize();
+        initRowOrder()
       }
     });
   });
@@ -105,30 +106,33 @@ let db = new sqlite3.Database("./database.db", function (data) {
       }
     });
   });
-
   // initialize row order
-  db.serialize(function() {
-    db.all("SELECT * FROM `rowOrder` LIMIT 1", (err, rows) => {
-      if (rows.length === 0) {
-        db.all("SELECT * FROM `data`", (err, rows) => {
-          let stmt = db.prepare(
-            "INSERT INTO `rowOrder` (`id`, `sort_order`) VALUES (?, ?)"
-          )
-          for (let i = 0; i < rows.length; i++) {
-            stmt.run(rows[i].id, i + 1);
-          }
-          stmt.finalize();
-        })
-      }
+  function initRowOrder() {
+    db.serialize(function() {
+      db.all("SELECT * FROM `rowOrder` LIMIT 1", (err, rows) => {
+        if (rows.length === 0) {
+          db.all("SELECT * FROM `data`", (err, rows) => {
+            console.log("rowOrder", rows)
+            let stmt = db.prepare(
+              "INSERT INTO `rowOrder` (`id`, `sort_order`) VALUES (?, ?)"
+            )
+            for (let i = 0; i < rows.length; i++) {
+              stmt.run(rows[i].id, i + 1);
+            }
+            stmt.finalize();
+          })
+        }
+      })
     })
-  })
+  }
+
 })
 
 /**
  * @param {{e.RequestHandler}} jsonParser
  * @param {{dataSource.UpdatedData}} req.body
  */
-router.post("/update", jsonParser, function (req, res, next) {
+router.post("/cell", jsonParser, function (req, res, next) {
   let changes = req.body.changes
 
   for (let i = 0; i < changes.length; i++) {
@@ -254,7 +258,6 @@ router.put("/column", jsonParser, function (req, res, next) {
         res.json({name: 'dynamic_' + num_of_dynamic_columns})
       }
     })
-
   })
 });
 
