@@ -382,5 +382,4 @@ router.delete("/column", jsonParser, function (req, res, next) {
   })
 })
 
-//TODO onDestroy => dataAtBeginning = data or smth like this
 module.exports = router;
