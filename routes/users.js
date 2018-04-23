@@ -296,6 +296,30 @@ router.post("/cell/unmerge", jsonParser, function (req, res, next) {
 });
 
 /**
+* @param {{e.RequestHandler}} jsonParser
+* @param {{dataSource.CellMeta}} req.query
+*/
+router.post("/cell/meta", jsonParser, function (req, res, next) {
+  let cellMeta = req.body
+  db.serialize(function () {
+    db.all(`SELECT meta FROM 'cellMeta' WHERE colId = '${cellMeta.column}' AND rowID = '${cellMeta.row}'`, (err, rows) => {
+      let tmp = {};
+      if (!rows.length) {
+        tmp[cellMeta.key] = cellMeta.value;
+        db.run(`INSERT INTO 'cellMeta'(rowId, colId, meta) VALUES ('${cellMeta.row}', '${cellMeta.column}', '${JSON.stringify(tmp)}')`);
+      } else {
+        rows.forEach((row) => {
+          tmp = JSON.parse(row.meta)
+          tmp[cellMeta.key] = cellMeta.value;
+          db.run(`UPDATE 'cellMeta' SET meta = '${JSON.stringify(tmp)}' WHERE colId = '${cellMeta.column}' AND rowID = '${cellMeta.row}'`);
+        });
+      }
+      res.json({data:'ok'});
+    });
+  });
+});
+
+/**
  * @param {{e.RequestHandler}} jsonParser
  * @param {{dataSource.ResizedColumn}} req.query
  */
