@@ -467,7 +467,7 @@
           "description": "Updated meta key"
         },
         "value": {
-          "type": ["string"],
+          "type": "string",
           "description": "Updated meta value"
         }
       }
@@ -808,7 +808,7 @@
       "properties": {
         "cellRange": {
           "type": "string",
-          "description": "todo"
+          "description": "Selection cell range"
         }
       }
     },
@@ -837,7 +837,7 @@
           "items": {
             "$ref": "#/definitions/ChangeModel"
           },
-          "description": "todo"
+          "description": "Object containg all changes made by Handsontable user"
         },
         "meta": {
           "type": "object",
