@@ -1,24 +1,46 @@
 /* eslint-env mocha */
 'use strict'
-var ZSchema = require('z-schema')
-const request = require('request')
+const ZSchema = require('z-schema');
+const request = require('request');
+const chai = require('chai');
+const fs = require('fs');
+let server;
 
-var validator = new ZSchema({})
+const validator = new ZSchema({});
+chai.should();
 
 require('dotenv').load()
 
-var baseURL = process.env.API_URL;
+let baseURL = process.env.API_URL;
 if (baseURL === null || baseURL === undefined) {
-  baseURL = "http://localhost:3000"
+  baseURL = "http://localhost:3001"
 }
 
 before(function (done) {
-  setTimeout(done, 1000);
+  // rebuild database
+  fs.unlink('database.db', function(){
+    delete require.cache[require.resolve('../app')];
+    server = require('../app');
+    setTimeout(()=>{
+      server.close();
+      done();
+    }, 1000)
+  });
 })
+
+beforeEach(function(done){
+  delete require.cache[require.resolve('../app')];
+  server= require('../app');
+  done();
+})
+
+afterEach(function (done) {
+  server.close(done);
+});
 
 describe('POST /users/data', function () {
   it('should return ordered and filtered  users data ', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "data": {
           "type": "array"
@@ -44,9 +66,9 @@ describe('POST /users/data', function () {
     },
     function (error, res, body) {
       if (error) return done(error)
-
       let val = validator.validate(JSON.parse(body), schema)
       val.should.be.true
+
 
       res.statusCode.should.equal(200)
       done()
@@ -56,7 +78,7 @@ describe('POST /users/data', function () {
 
 describe('POST /users/cell', function () {
   it('should update data ', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "data": {
           "type": "string"
@@ -67,7 +89,7 @@ describe('POST /users/cell', function () {
       ],
       "additionalProperties": true
     }
-    var data = {
+    let data = {
       changes: [{
         row: 1, column: "first_name", oldValue: "John", newValue: "James",
         meta: { row: 1, col: 1, visualRow: 1, visualCol: 1, prop: 1, row_id: 2, col_id: "first_name" }, source: "edit"
@@ -93,9 +115,9 @@ describe('POST /users/cell', function () {
   })
 })
 
-describe('POST /users/create/row', function () {
+describe('PUT /users/row', function () {
   it('should create new row', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "data": {
           "type": "object"
@@ -109,12 +131,12 @@ describe('POST /users/create/row', function () {
       ],
       "additionalProperties": true
     }
-    var data = {
+    let data = {
       index: 5, amount: 1, source: "ContextMenu.rowBelow"
     }
     request({
-      url: baseURL + '/users/create/row',
-      method: 'POST',
+      url: baseURL + '/users/row',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -132,9 +154,9 @@ describe('POST /users/create/row', function () {
   })
 })
 
-describe('POST /users/remove/row', function () {
+describe('DELETE /users/row', function () {
   it('should remove row', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "data": {
           "type": "string"
@@ -145,10 +167,10 @@ describe('POST /users/remove/row', function () {
       ],
       "additionalProperties": true
     }
-    var data = [6]
+    let data = [6]
     request({
-      url: baseURL + '/users/remove/row',
-      method: 'POST',
+      url: baseURL + '/users/row',
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -166,9 +188,9 @@ describe('POST /users/remove/row', function () {
   })
 })
 
-describe('POST /users/move/row', function () {
+describe('POST /users/row/move', function () {
   it('should move row to different position', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "data": {
           "type": "string"
@@ -179,9 +201,9 @@ describe('POST /users/move/row', function () {
       ],
       "additionalProperties": true
     }
-    var data = { rowsMoved: [5], target: 3 }
+    let data = { rowsMoved: [5], target: 3 }
     request({
-      url: baseURL + '/users/move/row',
+      url: baseURL + '/users/row/move',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -200,9 +222,9 @@ describe('POST /users/move/row', function () {
   })
 })
 
-describe('POST /users/create/column', function () {
+describe('PUT /users/column', function () {
   it('should create new column', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "name": {
           "type": "string"
@@ -213,10 +235,10 @@ describe('POST /users/create/column', function () {
       ],
       "additionalProperties": true
     }
-    var data = { index: 6, amount: 1, source: "ContextMenu.columnRight" }
+    let data = { index: 6, amount: 1, source: "ContextMenu.columnRight" }
     request({
-      url: baseURL + '/users/create/column',
-      method: 'POST',
+      url: baseURL + '/users/column',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -234,9 +256,9 @@ describe('POST /users/create/column', function () {
   })
 })
 
-describe('POST /users/move/column', function () {
+describe('POST /user/column/move', function () {
   it('should move column to different position', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "data": {
           "type": "array"
@@ -247,9 +269,9 @@ describe('POST /users/move/column', function () {
       ],
       "additionalProperties": true
     }
-    var data = { columnNames: ["dynamic_1"], target: 5 }
+    let data = { columnNames: ["dynamic_1"], target: 5 }
     request({
-      url: baseURL + '/users/move/column',
+      url: baseURL + '/users/column/move',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -270,7 +292,7 @@ describe('POST /users/move/column', function () {
 
 describe('GET /users/settings', function () {
   it('should return settings', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "data": {
           "type": "object"
@@ -300,9 +322,9 @@ describe('GET /users/settings', function () {
   })
 })
 
-describe('POST /users/remove/column', function () {
+describe('DELETE /users/column', function () {
   it('should remove column', function (done) {
-    var schema = {
+    let schema = {
       "properties": {
         "data": {
           "type": "string"
@@ -314,8 +336,8 @@ describe('POST /users/remove/column', function () {
       "additionalProperties": true
     }
     request({
-      url: baseURL + '/users/remove/column',
-      method: 'POST',
+      url: baseURL + '/users/column',
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },

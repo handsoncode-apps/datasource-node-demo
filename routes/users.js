@@ -112,7 +112,6 @@ let db = new sqlite3.Database("./database.db", function (data) {
       db.all("SELECT * FROM `rowOrder` LIMIT 1", (err, rows) => {
         if (rows.length === 0) {
           db.all("SELECT * FROM `data`", (err, rows) => {
-            console.log("rowOrder", rows)
             let stmt = db.prepare(
               "INSERT INTO `rowOrder` (`id`, `sort_order`) VALUES (?, ?)"
             )
