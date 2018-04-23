@@ -16,37 +16,7 @@
     "http"
   ],
   "paths": {
-    "/data": {
-      "post": {
-        "tags": [
-          "ControllerName"
-        ],
-        "summary": "Method that should return sorted and filtered data",
-        "operationId": "dataControllerName",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "DataModel",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/DataModel"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "schema": {
-              "$ref": "#/definitions/DataResponseModel"
-            }
-          }
-        }
-      }
-    },
-    "/update": {
+    "/cell": {
       "post": {
         "tags": [
           "ControllerName"
@@ -72,6 +42,249 @@
             "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/SimpleResponseModel"
+            }
+          }
+        }
+      }
+    },
+    "/cell/meta": {
+      "post": {
+        "tags": [
+          "ControllerName"
+        ],
+        "summary": "Method that should handle change of cell meta",
+        "operationId": "cellMetaControllerName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "CellMetaModel",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/CellMetaModel"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/SimpleResponseModel"
+            }
+          }
+        }
+      }
+    },
+    "/cell/merge": {
+      "post": {
+        "tags": [
+          "ControllerName"
+        ],
+        "summary": "Method that should be used for merging selected cells",
+        "operationId": "mergeCellsControllerName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "MergeCellsModel",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/MergeCellsModel"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/SimpleResponseModel"
+            }
+          }
+        }
+      }
+    },
+    "/cell/unmerge": {
+      "post": {
+        "tags": [
+          "ControllerName"
+        ],
+        "summary": "Method that should be used for spliting merged cells",
+        "operationId": "unmergeCellsControllerName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "UnmergeCellsModel",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UnmergeCellsModel"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/UnmergeCellsResponseModel"
+            }
+          }
+        }
+      }
+    },
+    "/column": {
+      "put": {
+        "tags": [
+          "ControllerName"
+        ],
+        "summary": "Method that should handle creating a new column on a server side",
+        "operationId": "createColumnControllerName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "CreateModel",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/CreateModel"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/CreateColumnResponseModel"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ControllerName"
+        ],
+        "summary": "Method that should handle removing column on a server side",
+        "operationId": "removeColControllerName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "RemoveRowModel",
+            "in": "body",
+            "description": "Array that contains unique names of removed columns",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "Unique name of removed column. Could be either number or string type."
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/SimpleResponseModel"
+            }
+          }
+        }
+      }
+    },
+    "/column/move": {
+      "post": {
+        "tags": [
+          "ControllerName"
+        ],
+        "summary": "Method that should be used for moving column to different position in dataset",
+        "operationId": "moveColControllerName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "MoveColumnModel",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/MoveColumnModel"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/MoveColumnResponseModel"
+            }
+          }
+        }
+      }
+    },
+    "/column/resize": {
+      "post": {
+        "tags": [
+          "ControllerName"
+        ],
+        "summary": "Method that should be used for setting new size of column",
+        "operationId": "resizeColumnControllerName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "ResizeColumnModel",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/ResizeColumnModel"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/SimpleResponseModel"
+            }
+          }
+        }
+      }
+    },
+    "/data": {
+      "post": {
+        "tags": [
+          "ControllerName"
+        ],
+        "summary": "Method that should return sorted and filtered data",
+        "operationId": "dataControllerName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "DataModel",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/DataModel"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/DataResponseModel"
             }
           }
         }
@@ -170,55 +383,22 @@
         }
       }
     },
-    "/column": {
-      "put": {
+    "/row/resize": {
+      "post": {
         "tags": [
           "ControllerName"
         ],
-        "summary": "Method that should handle creating a new column on a server side",
-        "operationId": "createColumnControllerName",
+        "summary": "Method that should be used for setting new size of the row",
+        "operationId": "resizeRowControllerName",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "CreateModel",
+            "name": "ResizeRowModel",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/CreateModel"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "schema": {
-              "$ref": "#/definitions/CreateColumnResponseModel"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "ControllerName"
-        ],
-        "summary": "Method that should handle removing column on a server side",
-        "operationId": "removeColControllerName",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "RemoveRowModel",
-            "in": "body",
-            "description": "Array that contains unique names of removed columns",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "description": "Unique name of removed column. Could be either number or string type."
-              }
+              "$ref": "#/definitions/ResizeRowModel"
             },
             "required": true
           }
@@ -228,36 +408,6 @@
             "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/SimpleResponseModel"
-            }
-          }
-        }
-      }
-    },
-    "/column/move": {
-      "post": {
-        "tags": [
-          "ControllerName"
-        ],
-        "summary": "Method that should be used for moving column to different position in dataset",
-        "operationId": "moveColControllerName",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "MoveRowModel",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/MoveColModel"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "schema": {
-              "$ref": "#/definitions/MoveColumnResponseModel"
             }
           }
         }
@@ -295,6 +445,33 @@
     }
   },
   "definitions": {
+    "CellMetaModel": {
+      "type": "object",
+      "required": [
+        "row",
+        "column",
+        "key",
+        "value"
+      ],
+      "properties": {
+        "row": {
+          "type": "number",
+          "description": "rowId from database"
+        },
+        "column": {
+          "type": "string",
+          "description": "colId from database"
+        },
+        "key": {
+          "type": "string",
+          "description": "Updated meta key"
+        },
+        "value": {
+          "type": "string",
+          "description": "Updated meta value"
+        }
+      }
+    },
     "ChangeModel": {
       "type": "object",
       "description": "Object containg all changes made by Handsontable user",
@@ -328,7 +505,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Name of filtering type. \n * `eq` - equal to\n * `neq` - not equal to\n * `empty` - is empty\n * `not_empty` - is not empty\n * `begins_with` - begins with\n * `ends_with` - ends with\n * `contains` - contains\n * `not_contains` - does not contains\n",
+          "description": "Name of filtering type. <br>* `eq` - equal to <br>* `neq` - not equal to <br>* `empty` - is empty <br>* `not_empty` - is not empty <br>* `begins_with` - begins with <br>* `ends_with` - ends with <br>* `contains` - contains <br>* `not_contains` - does not contains <br>\n",
           "enum": [
             "eq",
             "neq",
@@ -403,12 +580,8 @@
     },
     "DataModel": {
       "type": "object",
-      "required": [
-        "data",
-        "id"
-      ],
       "properties": {
-        "order": {
+        "sort": {
           "$ref": "#/definitions/OrderModel"
         },
         "filters": {
@@ -469,18 +642,43 @@
         }
       }
     },
-    "MoveColModel": {
+    "MergeCellsModel": {
+      "type": "object",
+      "required": [
+        "rows",
+        "columns"
+      ],
+      "properties": {
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Unique Id fo a row"
+          },
+          "description": "Array that contains rowIds"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Unique name of the column"
+          },
+          "description": "Array that contains column names"
+        }
+      }
+    },
+    "MoveColumnModel": {
       "type": "object",
       "required": [
         "columnNames",
         "target"
       ],
       "properties": {
-        "rowsMoved": {
+        "columnNames": {
           "type": "array",
           "items": {
             "type": "string",
-            "description": "Unique name of moved column. Could be either integer or string type."
+            "description": "Unique name columns. Could be either integer or string type."
           },
           "description": "Array that contains unique names of moved columns."
         },
@@ -540,7 +738,41 @@
             "ASC",
             "DESC"
           ],
-          "description": "Specifies ascending or descending order of column values.  Sort order\n * `asc` - Ascending, from A to Z \n * `desc` - Descending, from Z to A\n"
+          "description": "Specifies ascending or descending order of column values. <br>Sort order <br>* `asc` - Ascending, from A to Z <br>* `desc` - Descending, from Z to A <br>\n"
+        }
+      }
+    },
+    "ResizeColumnModel": {
+      "type": "object",
+      "required": [
+        "column",
+        "size"
+      ],
+      "properties": {
+        "column": {
+          "type": "string",
+          "description": "The unique name of the column."
+        },
+        "size": {
+          "type": "number",
+          "description": "New column width."
+        }
+      }
+    },
+    "ResizeRowModel": {
+      "type": "object",
+      "required": [
+        "row",
+        "size"
+      ],
+      "properties": {
+        "row": {
+          "type": "number",
+          "description": "Unique row Id."
+        },
+        "size": {
+          "type": "number",
+          "description": "New row height."
         }
       }
     },
@@ -568,6 +800,30 @@
         }
       }
     },
+    "UnmergeCellsModel": {
+      "type": "object",
+      "required": [
+        "cellRange"
+      ],
+      "properties": {
+        "cellRange": {
+          "type": "string",
+          "description": "Selection cell range"
+        }
+      }
+    },
+    "UnmergeCellsResponseModel": {
+      "type": "object",
+      "required": [
+        "data"
+      ],
+      "properties": {
+        "data": {
+          "type": "string",
+          "description": "Response message."
+        }
+      }
+    },
     "UpdateModel": {
       "type": "object",
       "required": [
@@ -581,7 +837,7 @@
           "items": {
             "$ref": "#/definitions/ChangeModel"
           },
-          "description": "todo"
+          "description": "Object containg all changes made by Handsontable user"
         },
         "meta": {
           "type": "object",
