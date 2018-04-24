@@ -371,7 +371,22 @@ router.post("/column/move", jsonParser, function (req, res, next) {
 });
 
 router.get("/settings", jsonParser, function (req, res, next) {
-  res.json({ data: settings });
+  let colTypes = [];
+  db.serialize(function() {
+    db.all("SELECT sql FROM sqlite_master WHERE tbl_name = 'data' AND type = 'table'", (err, rows) => {
+      let regExp = /([a-z0-9_]{1,20}) [A-Z]+[,]{0,1}/g;
+      let match;
+      while (match = regExp.exec(rows[0].sql)) {
+        let type = match[0].split(" ")[1].replace(/,\s*$/, "")
+        if (type === "INTEGER") {
+          type = "NUMERIC"
+        }
+        colTypes.push({type: type.toLowerCase()});
+      }
+      Object.assign(settings, {columns: colTypes});
+      res.json({ data: settings });
+    });
+  });
 });
 
 router.get("/", function(req, res){
