@@ -30,7 +30,7 @@ before(function (done) {
 
 beforeEach(function(done){
   delete require.cache[require.resolve('../app')];
-  server= require('../app');
+  server= require('../app').instanceApp;
   done();
 })
 
