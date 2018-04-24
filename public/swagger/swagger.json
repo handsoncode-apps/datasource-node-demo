@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "API description for Handsontable backend",
+    "description": "API description for Handsontable backend. To receive HOT events on backend you should implement methods listed below. Each method has it's own request and response schema that is described with examples in models section.",
     "version": "1.0.0",
     "title": "Handsontable Datasource Node"
   },
