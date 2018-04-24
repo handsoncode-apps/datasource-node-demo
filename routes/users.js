@@ -36,7 +36,7 @@ let db = new sqlite3.Database('./database.db', ((data) => {
       db.run('CREATE TABLE IF NOT EXISTS `rowOrder` (id INTEGER, sort_order INTEGER)');
       db.run('CREATE TABLE IF NOT EXISTS `sizes` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, colId TEXT, rowId INTEGER, size INTEGER)');
       db.run('CREATE TABLE IF NOT EXISTS `mergedCells` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ' +
-             'parent_row_id INTEGER, parent_col_id TEXT, cell_row_id INTEGER, cell_col_id TEXT)');
+        'parent_row_id INTEGER, parent_col_id TEXT, cell_row_id INTEGER, cell_col_id TEXT)');
       db.run('CREATE UNIQUE INDEX IF NOT EXISTS SETTINGS_INDEX ON settings (id)');
       db.run('CREATE UNIQUE INDEX IF NOT EXISTS SETTINGS_INDEX ON data (phone)');
       db.run('CREATE UNIQUE INDEX IF NOT EXISTS USER_INDEX ON cellMeta (rowId, colId)');
@@ -102,10 +102,10 @@ let db = new sqlite3.Database('./database.db', ((data) => {
  * @param {{dataSource.UpdatedData}} req.body
  */
 router.post('/cell', jsonParser, (req, res) => {
-  let {changes} = req.body;
+  let { changes } = req.body;
 
   for (let i = 0; i < changes.length; i++) {
-    let {row, meta} = changes[i];
+    let { row, meta } = changes[i];
 
     db.run(`UPDATE \`data\` SET ${changes[i].column} = '${changes[i].newValue}' WHERE id = '${row}'`);
 
@@ -133,14 +133,14 @@ router.post('/cell', jsonParser, (req, res) => {
 router.put('/row', jsonParser, (req, res) => {
   db.serialize(() => {
     let stmt = db.prepare('INSERT INTO `data` (`first_name`, `last_name`,`age`,`sex`,`phone`) VALUES (\'\', \'\', \'\', \'\', \'\')');
-    stmt.run(function(error) {
+    stmt.run(function (error) {
       if (!error) {
         db.get('SELECT * from `data` where id= ?', this.lastID, (errorData, row) => {
           db.all('SELECT MAX(sort_order) FROM `rowOrder`', (errorMax, rowOrder) => {
             let position = parseInt(rowOrder[0]['MAX(sort_order)'], 10) + 1;
             db.run(`INSERT INTO \`rowOrder\` (id, sort_order) VALUES ('${row.id}', '${position}')`);
           });
-          res.json({data: row, id: row.id});
+          res.json({ data: row, id: row.id });
         });
       }
     });
@@ -164,7 +164,7 @@ router.delete('/row', jsonParser, (req, res) => {
  */
 router.post('/row/move', jsonParser, (req, res) => {
   let rowMove = req.body;
-  let {rowsMoved, target} = rowMove;
+  let { rowsMoved, target } = rowMove;
 
   let stmt = db.prepare('UPDATE `rowOrder` SET sort_order=? WHERE id=? ');
   db.serialize(() => {
@@ -186,7 +186,7 @@ router.post('/row/move', jsonParser, (req, res) => {
       }
       stmt.finalize();
     });
-    res.json({data: 'ok'});
+    res.json({ data: 'ok' });
   });
 });
 
@@ -200,7 +200,7 @@ router.post('/row/resize', jsonParser, (req, res) => {
     let stmt = db.prepare(`INSERT OR REPLACE INTO \`sizes\` (rowId, size ) VALUES ('${resize.row}', '${resize.size}')`);
     stmt.run((err) => {
       if (!err) {
-        res.json({data: 'ok'});
+        res.json({ data: 'ok' });
       }
     });
   });
@@ -221,7 +221,7 @@ router.put('/column', jsonParser, (req, res) => {
     stmt.run((err) => {
       stmt.finalize();
       if (!err) {
-        res.json({name: `dynamic_${numOfDynamicColumns}`});
+        res.json({ name: `dynamic_${numOfDynamicColumns}` });
       }
     });
   });
@@ -234,13 +234,13 @@ router.put('/column', jsonParser, (req, res) => {
 
 router.post('/cell/merge', jsonParser, (req, res) => {
   let mergedData = req.body;
-  let {mergedParent, mergedCells} = mergedData;
+  let { mergedParent, mergedCells } = mergedData;
   let stmt = db.prepare('INSERT INTO `mergedCells` (parent_row_id, parent_col_id, cell_row_id, cell_col_id) VALUES (?, ?, ?, ?)');
   for (let i = 0; i < mergedCells.length; i++) {
     stmt.run(mergedParent.row, mergedParent.column, mergedCells[i].row, mergedCells[i].column);
   }
   stmt.finalize();
-  res.json({data: 'ok'});
+  res.json({ data: 'ok' });
 });
 
 /**
@@ -256,7 +256,7 @@ router.post('/cell/unmerge', jsonParser, (req, res) => {
     stmt.run(mergedParent.row, mergedParent.column, mergedCells[i].row, mergedCells[i].column);
   }
   stmt.finalize();
-  res.json({data: 'ok'});
+  res.json({ data: 'ok' });
 });
 
 /**
@@ -280,7 +280,7 @@ router.post('/cell/meta', jsonParser, (req, res) => {
         });
       }
     });
-    res.json({data: 'ok'});
+    res.json({ data: 'ok' });
   });
 });
 
@@ -294,7 +294,7 @@ router.post('/column/resize', jsonParser, (req, res) => {
     let stmt = db.prepare(`INSERT OR REPLACE INTO \`sizes\` (colId, size ) VALUES ('${resize.column}', '${resize.size}')`);
     stmt.run((err) => {
       if (!err) {
-        res.json({data: 'ok'});
+        res.json({ data: 'ok' });
       }
     });
   });
@@ -335,8 +335,23 @@ router.post('/column/move', jsonParser, (req, res) => {
   res.json({ data: colOrder });
 });
 
-router.get('/settings', jsonParser, (req, res) => {
-  res.json({ data: settings });
+router.get('/settings', jsonParser, (req, res, next) => {
+  let colTypes = [];
+  db.serialize(() => {
+    db.all('SELECT sql FROM sqlite_master WHERE tbl_name = \'data\' AND type = \'table\'', (err, rows) => {
+      let regExp = /([a-z0-9_]{1,20}) [A-Z]+[,]{0,1}/g;
+      let match;
+      while (match = regExp.exec(rows[0].sql)) {
+        let type = match[0].split(' ')[1].replace(/,\s*$/, '');
+        if (type === 'INTEGER') {
+          type = 'NUMERIC';
+        }
+        colTypes.push({ type: type.toLowerCase() });
+      }
+      Object.assign(settings, { columns: colTypes });
+      res.json({ data: settings });
+    });
+  });
 });
 
 router.get('/', (req, res) => {
@@ -362,7 +377,7 @@ router.delete('/column', jsonParser, (req, res) => {
           if (!dropError) {
             db.run('ALTER TABLE `data_temp` RENAME TO `data`', (alterError) => {
               if (!alterError) {
-                res.json({data: 'ok'});
+                res.json({ data: 'ok' });
               }
             });
           }
