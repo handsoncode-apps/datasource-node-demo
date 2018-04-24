@@ -37,16 +37,16 @@ let db = new sqlite3.Database("./database.db", function (data) {
         "CREATE TABLE IF NOT EXISTS `data` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT, age INTEGER, sex TEXT, phone TEXT)"
       );
       db.run(
-        "CREATE TABLE IF NOT EXISTS `cellMeta` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, rowId TEXT, colId TEXT, meta TEXT)"
+        "CREATE TABLE IF NOT EXISTS `cell_meta` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, row_id TEXT, col_id TEXT, meta TEXT)"
       );
       db.run(
-        "CREATE TABLE IF NOT EXISTS `rowOrder` (id INTEGER, sort_order INTEGER)"
+        "CREATE TABLE IF NOT EXISTS `row_order` (id INTEGER, sort_order INTEGER)"
       );
       db.run(
-        "CREATE TABLE IF NOT EXISTS `sizes` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, colId TEXT, rowId INTEGER, size INTEGER)"
+        "CREATE TABLE IF NOT EXISTS `sizes` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, col_id TEXT, row_id INTEGER, size INTEGER)"
       );
       db.run(
-        "CREATE TABLE IF NOT EXISTS `mergedCells` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, parent_row_id INTEGER, parent_col_id TEXT, cell_row_id INTEGER, cell_col_id TEXT)"
+        "CREATE TABLE IF NOT EXISTS `merged_cells` (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, parent_row_id INTEGER, parent_col_id TEXT, cell_row_id INTEGER, cell_col_id TEXT)"
       );
       db.run(
         "CREATE UNIQUE INDEX IF NOT EXISTS SETTINGS_INDEX ON settings (id)"
@@ -55,19 +55,19 @@ let db = new sqlite3.Database("./database.db", function (data) {
         "CREATE UNIQUE INDEX IF NOT EXISTS SETTINGS_INDEX ON data (phone)"
       );
       db.run(
-        "CREATE UNIQUE INDEX IF NOT EXISTS USER_INDEX ON cellMeta (rowId, colId)"
+        "CREATE UNIQUE INDEX IF NOT EXISTS USER_INDEX ON cell_meta (row_id, col_id)"
       );
       db.run(
-        "CREATE UNIQUE INDEX IF NOT EXISTS ROW_INDEX on rowOrder (id)"
+        "CREATE UNIQUE INDEX IF NOT EXISTS ROW_INDEX on row_order (id)"
       )
       db.run(
-        "CREATE UNIQUE INDEX IF NOT EXISTS MERGED_INDEX on mergedCells (cell_row_id, cell_col_id)"
+        "CREATE UNIQUE INDEX IF NOT EXISTS MERGED_INDEX on merged_cells (cell_row_id, cell_col_id)"
       )
       db.run(
-        "CREATE UNIQUE INDEX IF NOT EXISTS COLUMN_SIZE_INDEX on sizes (colId)"
+        "CREATE UNIQUE INDEX IF NOT EXISTS COLUMN_SIZE_INDEX on sizes (col_id)"
       )
       db.run(
-        "CREATE UNIQUE INDEX IF NOT EXISTS ROW_SIZE_INDEX on sizes (rowId)"
+        "CREATE UNIQUE INDEX IF NOT EXISTS ROW_SIZE_INDEX on sizes (row_id)"
       )
     });
   }
@@ -109,11 +109,11 @@ let db = new sqlite3.Database("./database.db", function (data) {
   // initialize row order
   function initRowOrder() {
     db.serialize(function() {
-      db.all("SELECT * FROM `rowOrder` LIMIT 1", (err, rows) => {
+      db.all("SELECT * FROM `row_order` LIMIT 1", (err, rows) => {
         if (rows.length === 0) {
           db.all("SELECT * FROM `data`", (err, rows) => {
             let stmt = db.prepare(
-              "INSERT INTO `rowOrder` (`id`, `sort_order`) VALUES (?, ?)"
+              "INSERT INTO `row_order` (`id`, `sort_order`) VALUES (?, ?)"
             )
             for (let i = 0; i < rows.length; i++) {
               stmt.run(rows[i].id, i + 1);
@@ -141,13 +141,13 @@ router.post("/cell", jsonParser, function (req, res, next) {
     db.run("UPDATE `data` SET " + changes[i].column + " = '" + changes[i].newValue + "' WHERE id = '" + rowId + "'");
 
     let data = [changes[i].row, changes[i].column, JSON.stringify(meta)];
-    db.run("INSERT INTO `cellMeta` ('rowId', 'colId', 'meta') VALUES (?, ?, ?)", data, function (err) {
+    db.run("INSERT INTO `cell_meta` ('row_id', 'col_id', 'meta') VALUES (?, ?, ?)", data, function (err) {
       if (err) {
         let update = []
         update.push(data[2])
         update.push(data[0])
         update.push(data[1])
-        db.run("UPDATE `cellMeta` SET meta=? WHERE rowId=? AND colId=?", update, function (err) {
+        db.run("UPDATE `cell_meta` SET meta=? WHERE row_id=? AND col_id=?", update, function (err) {
           if (err)
             return console.error(err.message);
         })
@@ -168,9 +168,9 @@ router.put("/row", jsonParser, function (req, res, next) {
     stmt.run(function(error){
       if (!error){
         db.get("SELECT * from `data` where id= ?",this.lastID,function(error,row){
-          db.all("SELECT MAX(sort_order) FROM `rowOrder`", (err, rowOrder) => {
+          db.all("SELECT MAX(sort_order) FROM `row_order`", (err, rowOrder) => {
             let position = parseInt(rowOrder[0]['MAX(sort_order)']) + 1;
-            db.run("INSERT INTO `rowOrder` (id, sort_order) VALUES ('" + row.id + "', '" + position + "')" )
+            db.run("INSERT INTO `row_order` (id, sort_order) VALUES ('" + row.id + "', '" + position + "')" )
           })
           res.json({data:row, id:row.id});
         })
@@ -199,9 +199,9 @@ router.post("/row/move", jsonParser, function(req, res, next) {
   let rowMove = req.body;
   let rowsMoved = rowMove.rowsMoved;
   let target = rowMove.target;
-  let stmt = db.prepare("UPDATE `rowOrder` SET sort_order=? WHERE id=? ");
+  let stmt = db.prepare("UPDATE `row_order` SET sort_order=? WHERE id=? ");
   db.serialize(function() {
-    db.all("SELECT * FROM `rowOrder` ORDER BY sort_order ASC", (err, rows) => {
+    db.all("SELECT * FROM `row_order` ORDER BY sort_order ASC", (err, rows) => {
       let filtered = [];
       for (let i = 0; i < rowsMoved.length; i++) {
         let founded = (rows.find((row) => row.id === rowsMoved[i]));
@@ -230,7 +230,7 @@ router.post("/row/move", jsonParser, function(req, res, next) {
 router.post("/row/resize", jsonParser, function (req, res, next) {
   let resize = req.body;
   db.serialize(function() {
-    let stmt = db.prepare("INSERT OR REPLACE INTO `sizes` (rowId, size ) VALUES ('" + resize.row + "', '" + resize.size + "')")
+    let stmt = db.prepare("INSERT OR REPLACE INTO `sizes` (row_id, size ) VALUES ('" + resize.row + "', '" + resize.size + "')")
     stmt.run(function(err) {
       if (!err) {
         res.json({data:'ok'});
@@ -270,7 +270,7 @@ router.post("/cell/merge", jsonParser, function (req, res, next) {
   let mergedData = req.body;
   let mergedParent = mergedData.mergedParent;
   let mergedCells = mergedData.mergedCells;
-  let stmt = db.prepare("INSERT INTO `mergedCells` (parent_row_id, parent_col_id, cell_row_id, cell_col_id) VALUES (?, ?, ?, ?)")
+  let stmt = db.prepare("INSERT INTO `merged_cells` (parent_row_id, parent_col_id, cell_row_id, cell_col_id) VALUES (?, ?, ?, ?)")
   for (let i = 0; i < mergedCells.length; i++) {
     stmt.run(mergedParent.row, mergedParent.column, mergedCells[i].row, mergedCells[i].column)
   }
@@ -286,7 +286,7 @@ router.post("/cell/unmerge", jsonParser, function (req, res, next) {
   let unmergedData = req.body;
   let mergedParent = unmergedData.mergedParent;
   let mergedCells = unmergedData.mergedCells;
-  let stmt = db.prepare("DELETE FROM `mergedCells` WHERE parent_row_id = ? AND parent_col_id = ? AND cell_row_id = ? AND cell_col_id = ?")
+  let stmt = db.prepare("DELETE FROM `merged_cells` WHERE parent_row_id = ? AND parent_col_id = ? AND cell_row_id = ? AND cell_col_id = ?")
   for (let i = 0; i < mergedCells.length; i++) {
     stmt.run(mergedParent.row, mergedParent.column, mergedCells[i].row, mergedCells[i].column)
   }
@@ -304,13 +304,13 @@ router.post("/cell/meta", jsonParser, function (req, res, next) {
     let tmp = {};
 
     tmp[cellMeta.key] = cellMeta.value;
-    db.run(`INSERT INTO 'cellMeta'(rowId, colId, meta) VALUES ('${cellMeta.row}', '${cellMeta.column}', '${JSON.stringify(tmp)}')`, (error) => {
+    db.run(`INSERT INTO 'cell_meta'(row_id, col_id, meta) VALUES ('${cellMeta.row}', '${cellMeta.column}', '${JSON.stringify(tmp)}')`, (error) => {
       if (error) {
-        db.all(`SELECT meta FROM 'cellMeta' WHERE colId = '${cellMeta.column}' AND rowID = '${cellMeta.row}'`, (err, rows) => {
+        db.all(`SELECT meta FROM 'cell_meta' WHERE col_id = '${cellMeta.column}' AND row_id = '${cellMeta.row}'`, (err, rows) => {
           if (!error) {
             tmp = JSON.parse(row.meta)
             tmp[cellMeta.key] = cellMeta.value;
-            db.run(`UPDATE 'cellMeta' SET meta = '${JSON.stringify(tmp)}' WHERE colId = '${cellMeta.column}' AND rowID = '${cellMeta.row}'`);
+            db.run(`UPDATE 'cell_meta' SET meta = '${JSON.stringify(tmp)}' WHERE col_id = '${cellMeta.column}' AND row_id = '${cellMeta.row}'`);
           }
         })
       }
@@ -326,7 +326,7 @@ router.post("/cell/meta", jsonParser, function (req, res, next) {
 router.post("/column/resize", jsonParser, function (req, res, next) {
   let resize = req.body;
   db.serialize(function() {
-    let stmt = db.prepare("INSERT OR REPLACE INTO `sizes` (colId, size ) VALUES ('" + resize.column + "', '" + resize.size + "')")
+    let stmt = db.prepare("INSERT OR REPLACE INTO `sizes` (col_id, size ) VALUES ('" + resize.column + "', '" + resize.size + "')")
     stmt.run(function(err) {
       if (!err) {
         res.json({data:'ok'});
@@ -341,7 +341,7 @@ router.post("/column/resize", jsonParser, function (req, res, next) {
  */
 router.post("/data", jsonParser, function (req, res, next) {
   let queryBuilder = new dataSource.QueryBuilder(req.body)
-  let dbQuery = queryBuilder.buildQuery("SELECT data.* FROM `data` JOIN rowOrder ON data.id = rowOrder.id")
+  let dbQuery = queryBuilder.buildQuery("SELECT data.* FROM `data` JOIN row_order ON data.id = row_order.id")
 
   db.all(dbQuery, (err, rows) => {
     res.json({ data: rows, meta: { colOrder: colOrder }, rowId: "id" });
