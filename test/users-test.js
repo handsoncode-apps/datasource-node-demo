@@ -20,7 +20,7 @@ before(function (done) {
   // rebuild database
   fs.unlink('database.db', function(){
     delete require.cache[require.resolve('../app')];
-    server = require('../app');
+    server = require('../app').instanceApp;
     setTimeout(()=>{
       server.close();
       done();
