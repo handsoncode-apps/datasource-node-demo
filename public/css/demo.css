@@ -59,8 +59,32 @@ body {
     height: 100%;
     border: 0;
 }
+#log-container {
+    position: relative;
+}
 #log-container i {
     font-family: "Font Awesome 5 Free" !important;
+}
+#log-container .clear-logs, #log-container .toggle-logs {
+    position: absolute;
+    padding: 5px;
+    border-radius: 4px;
+    font-family: "Helvetica Neue";
+    font-size: 10px;
+    color: #444F6C;
+    border-color: #ccc;
+    outline: none;
+}
+#log-container .clear-logs {
+    top: 16px;
+    right: 16px;
+}
+#log-container .toggle-logs {
+    top: 16px;
+    right: 80px;
+}
+#log-container .clear-logs:hover, #log-container .toggle-logs:hover {
+    background-color: #fafafa;
 }
 #log {
     display: block;
@@ -97,15 +121,17 @@ body {
     font-size: 12px;
 }
 #log .request .data {
+    display: none;
     border-left: 3px solid;
 }
 #log .request .req-body, #log .request .res-body {
     padding-left: 10px;
     font-family: 'Roboto Mono', monospace;
 }
-#log .request .req-body i, #log .request .res-body i {
+#log .request .toggle-data {
     position: relative;
-    top: 1px;
+    top: -1px;
+    margin-right: 6px;
     font-size: 11px;
     color: #BCBCBC;
 }

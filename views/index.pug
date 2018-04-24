@@ -12,6 +12,10 @@ block content
         div(id="hot")
       div(id="log-container" class="split content")
         div(id="log" class="split")
+        button(class="toggle-logs")
+          span Toggle all
+        button(class="clear-logs")
+          span Clear logs
   script.
     Split(['#col-left', '#col-right'], {
       gutterSize: 16,
@@ -39,13 +43,12 @@ block content
     });
 
 block scripts
-  script(src='/js/demo.js')
   script(src='/js/split.js')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
   script(src='https://docs.handsontable.com/pro/1.18.0/bower_components/handsontable-pro/dist/handsontable.full.js')
   script(src='/js/jsonTreeViewer.js')
   script(src='/js/datasource-connector.full.js')
-  
+  script(src='/js/demo.js')
 
 block css
   link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css")

@@ -1,11 +1,23 @@
+
+$(document).ready(function() {
+  $('.clear-logs').on('click', function() {
+    $('#log').empty()
+  })
+
+  $('.toggle-logs').on('click', function() {
+    $('.data').toggle();
+    $('.fa-plus-square, .fa-minus-square').toggleClass('fa-minus-square fa-plus-square')
+  })
+})
+
 function showLog(data) {
   var $log = $("#log");
   var reqDiv = '<div class="request request--' + data.request.method.toLowerCase() + '">' +
+              '<i class="toggle-data fal fa-plus-square"></i>' +
               '<div class="method">' + data.request.method + '</div>' +
               '<div class="url">' + data.request.url + '</div>' +
               '<div class="data">' +
                 '<div class="req-body payload">' +
-                  '<i class="toggle-data fal fa-minus-square"></i>' +
                   '<p>Request</p>' +
                   '<div class="json">'+
                     '<div class="headers"></div>' +
@@ -13,7 +25,6 @@ function showLog(data) {
                     '</div>' +
                   '</div>' +
                   '<div class="res-body">' +
-                    '<i class="toggle-data fal fa-minus-square"></i>' +
                     '<p>Response</p>' +
                     '<div class="res-json-placeholder json"></div>' +
                   '</div>' +
@@ -30,11 +41,12 @@ function showLog(data) {
   });
 
   jsonTree.create(data.response, $log.find('.res-json-placeholder:first')[0]);
+
   $('.request:first .toggle-data').on('click', function() {
-    if ($(this).siblings('.json').css('display') !== 'none' ) {
-      $(this).siblings('.json').fadeOut(100)
+    if ($(this).siblings('.data').css('display') !== 'none' ) {
+      $(this).removeClass('fa-minus-square').addClass('fa-plus-square').siblings('.data').fadeOut(100)
     } else {
-      $(this).siblings('.json').fadeIn(100)
+      $(this).removeClass('fa-plus-square').addClass('fa-minus-square').siblings('.data').fadeIn(100)
     }
   });
 }
