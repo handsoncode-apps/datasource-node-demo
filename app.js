@@ -12,6 +12,9 @@ app.use(bodyParser.json());
 app.set('view engine', 'pug');
 
 app.use('/users', users);
+app.get('/', (req, res) => {
+  res.redirect('/users');
+});
 app.use(express.static('public'));
 
 // catch 404 and forward to error handler
