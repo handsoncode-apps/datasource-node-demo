@@ -305,7 +305,7 @@ router.post('/column/resize', jsonParser, (req, res) => {
  * @param {{dataSource.SearchParams}} req.query
  */
 router.post('/data', jsonParser, (req, res) => {
-  let queryBuilder = new dataSource.QueryBuilder(req.body);
+  let queryBuilder = new dataSource.QueryBuilder(req.body, 'data');
   let dbQuery = queryBuilder.buildQuery('SELECT data.* FROM `data` JOIN rowOrder ON data.id = rowOrder.id');
 
   db.all(dbQuery, (err, rows) => {
