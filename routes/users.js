@@ -117,7 +117,7 @@ router.post('/cell', jsonParser, (req, res) => {
         update.push(data[0]);
         update.push(data[1]);
         db.run('UPDATE `cellMeta` SET meta=? WHERE rowId=? AND colId=?', update, (errCell) => {
-          if (errCell) { return console.error(errCell.message); }
+          if (errCell) { console.error(errCell.message); }
         });
       }
     });
@@ -269,13 +269,13 @@ router.post('/cell/meta', jsonParser, (req, res) => {
     let tmp = {};
 
     tmp[cellMeta.key] = cellMeta.value;
-    db.run(`INSERT INTO 'cellMeta'(rowId, colId, meta) VALUES ('${cellMeta.row}', '${cellMeta.column}', '${JSON.stringify(tmp)}')`, (error) => {
+    db.run(`INSERT INTO 'cellMeta' (rowId, colId, meta) VALUES ('${cellMeta.row}', '${cellMeta.column}', '${JSON.stringify(tmp)}')`, (error) => {
       if (error) {
-        db.all(`SELECT meta FROM 'cellMeta' WHERE colId = '${cellMeta.column}' AND rowID = '${cellMeta.row}'`, (err) => {
+        db.all(`SELECT meta FROM 'cellMeta' WHERE colId = '${cellMeta.column}' AND rowId = '${cellMeta.row}'`, (err, row) => {
           if (!err) {
-            tmp = JSON.parse(row.meta);
+            tmp = JSON.parse(row[0].meta);
             tmp[cellMeta.key] = cellMeta.value;
-            db.run(`UPDATE 'cellMeta' SET meta = '${JSON.stringify(tmp)}' WHERE colId = '${cellMeta.column}' AND rowID = '${cellMeta.row}'`);
+            db.run(`UPDATE 'cellMeta' SET meta = '${JSON.stringify(tmp)}' WHERE colId = '${cellMeta.column}' AND rowId = '${cellMeta.row}'`);
           }
         });
       }
@@ -306,10 +306,15 @@ router.post('/column/resize', jsonParser, (req, res) => {
  */
 router.post('/data', jsonParser, (req, res) => {
   let queryBuilder = new dataSource.QueryBuilder(req.body, 'data');
-  let dbQuery = queryBuilder.buildQuery('SELECT data.* FROM `data` JOIN rowOrder ON data.id = rowOrder.id');
+  let dataQuery = queryBuilder.buildQuery('SELECT data.* FROM `data` JOIN rowOrder ON data.id = rowOrder.id');
+  let cellQuery = queryBuilder.buildQuery('SELECT cellMeta.* FROM `cellMeta` JOIN data ON data.id = cellMeta.rowId', false);
 
-  db.all(dbQuery, (err, rows) => {
-    res.json({ data: rows, meta: { colOrder }, rowId: 'id' });
+  db.all(dataQuery, (err, rows) => {
+    db.all(cellQuery, (error, meta) => {
+      res.json({
+        data: rows, meta, colOrder, rowId: 'id'
+      });
+    });
   });
 });
 
@@ -335,15 +340,16 @@ router.post('/column/move', jsonParser, (req, res) => {
   res.json({ data: colOrder });
 });
 
-router.get('/settings', jsonParser, (req, res, next) => {
+router.get('/settings', jsonParser, (req, res) => {
   let colTypes = [];
   db.serialize(() => {
     db.all('SELECT sql FROM sqlite_master WHERE tbl_name = \'data\' AND type = \'table\'', (err, rows) => {
       let regExp = /([a-z0-9_]{1,20}) [A-Z]+[,]{0,1}/g;
       let match;
+      // eslint-disable-next-line no-cond-assign
       while (match = regExp.exec(rows[0].sql)) {
         let type = match[0].split(' ')[1].replace(/,\s*$/, '');
-        if (type === 'INTEGER') {
+        if (type === 'INTEGER' || type === 'INT') {
           type = 'NUMERIC';
         }
         colTypes.push({ type: type.toLowerCase() });
