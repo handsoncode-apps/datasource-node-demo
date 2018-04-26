@@ -5,7 +5,7 @@
   "author": "Handsoncode <hello@handsontable.com>",
   "scripts": {
     "start": "node ./bin/www",
-    "lint": "eslint --rule \"no-restricted-globals: 0\"  --ext .js ./app.js ./routes ./test",
+    "lint": "eslint --rule \"no-restricted-globals: 0\"  --ext .js ./app.js ./routes",
     "test": "mocha",
     "postinstall": "cp ./node_modules/datasource-connector/dist/datasource-connector.full.js ./public/js/",
     "link": "link ../datasource-connector/dist/datasource-connector.js public/js/datasource-connector.js && link ../datasource-connector/dist/datasource-connector.js.map public/js/datasource-connector.js.map"
@@ -25,13 +25,15 @@
     "datasource-node": "handsoncode-apps/datasource-node"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.3",
     "chai": "^4.1.2",
-    "z-schema": "^3.19.1",
     "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint-plugin-standard": "^3.0.1",
+    "z-schema": "^3.19.1"
   }
 }
