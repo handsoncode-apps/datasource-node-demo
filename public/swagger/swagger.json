@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "API description for Handsontable backend. To receive HOT events on backend you should implement methods listed below. Each method has it's own request and response schema that is described with examples in models section.",
+    "description": "API description for Handsontable backend. To receive HOT events on backend you should implement methods listed below. Each method has it's own request and response schema that is described with examples in Models section.",
     "version": "1.0.0",
     "title": "Handsontable Datasource Node"
   },
@@ -612,18 +612,30 @@
           "description": "Unique name of key column."
         },
         "meta": {
-          "type": "object",
-          "additionalProperties": true,
-          "example": {
-            "colOrder": [
-              "id",
-              "first_name",
-              "last_name",
-              "age",
-              "sex"
-            ]
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "colId": {
+                "type": "string"
+              },
+              "meta": {
+                "type": "string"
+              },
+              "rowId": {
+                "type": [
+                  "string",
+                  "integer"
+                ]
+              }
+            },
+            "description": "Cell meta data"
           },
           "description": "Additional meta properties. Can contains order of columns."
+        },
+        "colOrder": {
+          "type": "object",
+          "additionalProperties": true
         }
       }
     },
