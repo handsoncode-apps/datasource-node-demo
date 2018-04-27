@@ -307,11 +307,13 @@ router.post('/data', jsonParser, (req, res) => {
   let queryBuilder = new dataSource.QueryBuilder(req.body);
   let dataQuery = queryBuilder.buildQuery('SELECT data.* FROM `data` JOIN row_order ON data.id = row_order.id');
   let cellQuery = queryBuilder.buildQuery('SELECT cell_meta.* FROM `cell_meta` JOIN data ON data.id = cell_meta.row_id', false);
-
+  let mergeQuery = queryBuilder.buildQuery('SELECT merged_cells.* FROM `merged_cells` JOIN data ON data.id = merged_cells.cell_row_id', false);
   db.all(dataQuery, (err, rows) => {
     db.all(cellQuery, (error, meta) => {
-      res.json({
-        data: rows, meta, colOrder, rowId: 'id'
+      db.all(mergeQuery, (err, merged) => {
+        res.json({
+          data: rows, meta, colOrder, rowId: 'id', merged
+        });
       });
     });
   });
